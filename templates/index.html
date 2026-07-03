@@ -1,0 +1,154 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GRINDBOT - AI Fitness Coach</title>
+    <div class="profile-card">
+    <h2>👤 My Profile</h2>
+
+    <div class="profile-grid">
+        <div><strong>Name:</strong> <span id="profileName">-</span></div>
+        <div><strong>Age:</strong> <span id="profileAge">-</span></div>
+        <div><strong>Weight:</strong> <span id="profileWeight">-</span> kg</div>
+        <div><strong>Height:</strong> <span id="profileHeight">-</span> cm</div>
+        <div><strong>Goal:</strong> <span id="profileGoal">-</span></div>
+        <div><strong>BMI:</strong> <span id="profileBMI">-</span></div>
+    </div>
+</div>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<h1>🏋️ GRINDBOT</h1>
+
+<p>AI Powered Fitness & Nutrition Coach</p>
+
+</div>
+
+    <input type="text" id="name" placeholder="Enter Name">
+
+    <input type="number" id="age" placeholder="Age">
+
+    <input type="number" id="weight" placeholder="Weight (kg)">
+
+    <input type="number" id="height" placeholder="Height (cm)">
+
+    <select id="goal">
+        <option value="Weight Loss">Weight Loss</option>
+        <option value="Weight Gain">Weight Gain</option>
+        <option value="Muscle Building">Muscle Building</option>
+        <option value="Maintain Fitness">Maintain Fitness</option>
+    </select>
+    <br><br>
+
+<label><b>Activity Level</b></label>
+
+<select id="activity">
+    <option value="Beginner">Beginner</option>
+    <option value="Moderate">Moderate</option>
+    <option value="Active">Active</option>
+    <option value="Very Active">Very Active</option>
+</select>
+
+<br><br>
+
+<label><b>Diet Preference</b></label>
+
+<select id="diet">
+    <option value="Vegetarian">Vegetarian</option>
+    <option value="Non-Vegetarian">Non-Vegetarian</option>
+    <option value="Vegan">Vegan</option>
+</select>
+
+    <button onclick="generatePlan()">
+        🚀 Generate My AI Plan
+    </button>
+
+    <hr>
+
+    <h2>Your BMI</h2>
+
+    <h3 id="bmi"></h3>
+
+<div class="card">
+
+<h2>Your AI Fitness Plan</h2>
+
+<pre id="result"></pre>
+
+</div>
+    <br>
+
+    <button onclick="window.print()">
+
+ 🖨 Download / Print Plan
+
+    </button>
+    <hr>
+
+<div class="card">
+
+<h2>📊 Weekly Progress Tracker</h2>
+
+...
+
+</div>
+
+<input type="number" id="currentWeight" placeholder="Current Weight (kg)">
+
+<label>Energy Level</label>
+<input type="range" id="energy" min="1" max="5" value="3">
+
+<label>Sleep Quality</label>
+<input type="range" id="sleep" min="1" max="5" value="3">
+
+<textarea id="notes" placeholder="Write your weekly notes here..." rows="4"></textarea>
+
+<br><br>
+
+<button onclick="analyzeWeek()">
+    📊 Analyze Weekly Progress
+</button>
+
+<h2>Weekly AI Report</h2>
+
+<pre id="weeklyResult"></pre>
+<hr>
+
+<div class="card">
+
+<h2>📈 Dashboard</h2>
+
+...
+
+</div>
+
+<h3>Weight Trend</h3>
+<canvas id="weightChart"></canvas>
+
+<h3>Energy Trend</h3>
+<canvas id="energyChart"></canvas>
+
+<h3>Sleep Trend</h3>
+<canvas id="sleepChart"></canvas>
+
+</div>
+<hr>
+
+<div class="card">
+
+<h2>Average User Comparison</h2>
+
+<div id="comparison"></div>
+
+</div>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
