@@ -1,154 +1,396 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>GRINDBOT - AI Fitness Coach</title>
-    <div class="profile-card">
-    <h2>👤 My Profile</h2>
 
-    <div class="profile-grid">
-        <div><strong>Name:</strong> <span id="profileName">-</span></div>
-        <div><strong>Age:</strong> <span id="profileAge">-</span></div>
-        <div><strong>Weight:</strong> <span id="profileWeight">-</span> kg</div>
-        <div><strong>Height:</strong> <span id="profileHeight">-</span> cm</div>
-        <div><strong>Goal:</strong> <span id="profileGoal">-</span></div>
-        <div><strong>BMI:</strong> <span id="profileBMI">-</span></div>
-    </div>
-</div>
+<meta charset="UTF-8">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>GRINDBOT - AI Fitness Coach</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
 </head>
 
 <body>
 
 <div class="container">
 
+<!-- HEADER -->
+
 <div class="header">
 
 <h1>🏋️ GRINDBOT</h1>
 
-<p>AI Powered Fitness & Nutrition Coach</p>
+<p>Your Personal AI Fitness & Nutrition Coach</p>
 
 </div>
 
-    <input type="text" id="name" placeholder="Enter Name">
+<!-- PROFILE -->
 
-    <input type="number" id="age" placeholder="Age">
+<div class="profile-card">
 
-    <input type="number" id="weight" placeholder="Weight (kg)">
+<h2>👤 My Profile</h2>
 
-    <input type="number" id="height" placeholder="Height (cm)">
+<div class="profile-grid">
 
-    <select id="goal">
-        <option value="Weight Loss">Weight Loss</option>
-        <option value="Weight Gain">Weight Gain</option>
-        <option value="Muscle Building">Muscle Building</option>
-        <option value="Maintain Fitness">Maintain Fitness</option>
-    </select>
-    <br><br>
+<div>
+
+<strong>Name</strong><br>
+
+<span id="profileName">-</span>
+
+</div>
+
+<div>
+
+<strong>Age</strong><br>
+
+<span id="profileAge">-</span>
+
+</div>
+
+<div>
+
+<strong>Weight</strong><br>
+
+<span id="profileWeight">-</span> kg
+
+</div>
+
+<div>
+
+<strong>Height</strong><br>
+
+<span id="profileHeight">-</span> cm
+
+</div>
+
+<div>
+
+<strong>Goal</strong><br>
+
+<span id="profileGoal">-</span>
+
+</div>
+
+<div>
+
+<strong>BMI</strong><br>
+
+<span id="profileBMI">-</span>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- FITNESS FORM -->
+
+<div class="card">
+
+<h2>🏋️ Generate Your AI Fitness Plan</h2>
+
+<input
+type="text"
+id="name"
+placeholder="Enter Your Name"
+value="{{ user.username if user else '' }}">
+
+<input
+type="number"
+id="age"
+placeholder="Enter Age"
+value="{{ user.age if user.age else '' }}">
+
+<input
+type="number"
+id="weight"
+placeholder="Weight (kg)"
+value="{{ user.weight if user.weight else '' }}">
+
+<input
+type="number"
+id="height"
+placeholder="Height (cm)"
+value="{{ user.height if user.height else '' }}">
+
+<label><b>Fitness Goal</b></label>
+
+<select id="goal">
+
+<option value="Weight Loss"
+{% if user.goal=="Weight Loss" %}selected{% endif %}>
+Weight Loss
+</option>
+
+<option value="Weight Gain"
+{% if user.goal=="Weight Gain" %}selected{% endif %}>
+Weight Gain
+</option>
+
+<option value="Muscle Building"
+{% if user.goal=="Muscle Building" %}selected{% endif %}>
+Muscle Building
+</option>
+
+<option value="Maintain Fitness"
+{% if user.goal=="Maintain Fitness" %}selected{% endif %}>
+Maintain Fitness
+</option>
+
+</select>
 
 <label><b>Activity Level</b></label>
 
 <select id="activity">
-    <option value="Beginner">Beginner</option>
-    <option value="Moderate">Moderate</option>
-    <option value="Active">Active</option>
-    <option value="Very Active">Very Active</option>
-</select>
 
-<br><br>
+<option value="Beginner"
+{% if user.activity=="Beginner" %}selected{% endif %}>
+Beginner
+</option>
+
+<option value="Moderate"
+{% if user.activity=="Moderate" %}selected{% endif %}>
+Moderate
+</option>
+
+<option value="Active"
+{% if user.activity=="Active" %}selected{% endif %}>
+Active
+</option>
+
+<option value="Very Active"
+{% if user.activity=="Very Active" %}selected{% endif %}>
+Very Active
+</option>
+
+</select>
 
 <label><b>Diet Preference</b></label>
 
 <select id="diet">
-    <option value="Vegetarian">Vegetarian</option>
-    <option value="Non-Vegetarian">Non-Vegetarian</option>
-    <option value="Vegan">Vegan</option>
+
+<option value="Vegetarian"
+{% if user.diet=="Vegetarian" %}selected{% endif %}>
+Vegetarian
+</option>
+
+<option value="Non-Vegetarian"
+{% if user.diet=="Non-Vegetarian" %}selected{% endif %}>
+Non-Vegetarian
+</option>
+
+<option value="Vegan"
+{% if user.diet=="Vegan" %}selected{% endif %}>
+Vegan
+</option>
+
 </select>
 
-    <button onclick="generatePlan()">
-        🚀 Generate My AI Plan
-    </button>
+<button onclick="generatePlan()">
 
-    <hr>
+🚀 Generate My AI Plan
 
-    <h2>Your BMI</h2>
+</button>
 
-    <h3 id="bmi"></h3>
+</div><!-- ================= BMI ================= -->
 
 <div class="card">
 
-<h2>Your AI Fitness Plan</h2>
+<h2>📊 Your BMI</h2>
 
-<pre id="result"></pre>
+<h1 id="bmi">--</h1>
 
 </div>
-    <br>
 
-    <button onclick="window.print()">
 
- 🖨 Download / Print Plan
-
-    </button>
-    <hr>
+<!-- ================= AI RESULT ================= -->
 
 <div class="card">
 
-<h2>📊 Weekly Progress Tracker</h2>
+<h2>🤖 Your AI Fitness Plan</h2>
 
-...
+<pre id="result">
+Your personalized AI fitness plan will appear here...
+</pre>
+
+<br>
+
+<button onclick="window.print()">
+
+🖨 Download / Print Plan
+
+</button>
 
 </div>
 
-<input type="number" id="currentWeight" placeholder="Current Weight (kg)">
 
-<label>Energy Level</label>
-<input type="range" id="energy" min="1" max="5" value="3">
+<!-- ================= WEEKLY PROGRESS ================= -->
 
-<label>Sleep Quality</label>
-<input type="range" id="sleep" min="1" max="5" value="3">
+<div class="card">
 
-<textarea id="notes" placeholder="Write your weekly notes here..." rows="4"></textarea>
+<h2>📈 Weekly Progress Tracker</h2>
+
+<input
+type="number"
+id="currentWeight"
+placeholder="Current Weight (kg)">
+
+<label><b>Energy Level</b></label>
+
+<input
+type="range"
+id="energy"
+min="1"
+max="5"
+value="3">
+
+<label><b>Sleep Quality</b></label>
+
+<input
+type="range"
+id="sleep"
+min="1"
+max="5"
+value="3">
+
+<textarea
+id="notes"
+rows="5"
+placeholder="Write your weekly progress here..."></textarea>
+
+<br>
+
+<button onclick="analyzeWeek()">
+
+📊 Analyze Weekly Progress
+
+</button>
+
+</div>
+
+
+<!-- ================= WEEKLY REPORT ================= -->
+
+<div class="card">
+
+<h2>📝 Weekly AI Report</h2>
+
+<pre id="weeklyResult">
+Your weekly AI report will appear here...
+</pre>
+
+</div><!-- ================= DASHBOARD ================= -->
+
+<div class="card">
+
+<h2>📊 Progress Dashboard</h2>
+
+<h3>⚖ Weight Trend</h3>
+
+<canvas id="weightChart"></canvas>
 
 <br><br>
 
-<button onclick="analyzeWeek()">
-    📊 Analyze Weekly Progress
-</button>
+<h3>⚡ Energy Trend</h3>
 
-<h2>Weekly AI Report</h2>
-
-<pre id="weeklyResult"></pre>
-<hr>
-
-<div class="card">
-
-<h2>📈 Dashboard</h2>
-
-...
-
-</div>
-
-<h3>Weight Trend</h3>
-<canvas id="weightChart"></canvas>
-
-<h3>Energy Trend</h3>
 <canvas id="energyChart"></canvas>
 
-<h3>Sleep Trend</h3>
+<br><br>
+
+<h3>😴 Sleep Trend</h3>
+
 <canvas id="sleepChart"></canvas>
 
 </div>
-<hr>
+
+
+<!-- ================= COMPARISON ================= -->
 
 <div class="card">
 
-<h2>Average User Comparison</h2>
+<h2>🏆 Average User Comparison</h2>
 
-<div id="comparison"></div>
+<div id="comparison">
+
+Generate your weekly report to compare yourself with the average user.
 
 </div>
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</div>
+
+
+<!-- ================= FOOTER ================= -->
+
+<div class="footer">
+
+<hr>
+
+<h3>🏋️ GRINDBOT</h3>
+
+<p>AI Powered Fitness & Nutrition Coach</p>
+
+<p>Developed with ❤️ using Flask + Gemini AI</p>
+
+</div>
+
+</div>
+<div class="card">
+
+<h2>📂 History</h2>
+
+<a href="/history">
+
+<button>
+
+📈 View Workout History
+
+</button>
+
+</a>
+
+</div>
+<div class="card">
+
+<h2>🤖 AI Fitness Chat</h2>
+
+<textarea
+id="chatQuestion"
+rows="4"
+placeholder="Ask anything about fitness, nutrition or workouts..."></textarea>
+
+<br><br>
+
+<button onclick="askAI()">
+
+💬 Ask AI
+
+</button>
+
+<br><br>
+
+<pre id="chatAnswer">
+
+Your AI answer will appear here...
+
+</pre>
+
+</div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
 </body>
+
 </html>

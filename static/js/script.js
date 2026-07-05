@@ -1,199 +1,356 @@
-async function generatePlan() {
-let weeklyHistory = JSON.parse(localStorage.getItem("weeklyHistory")) || [];
+// ==============================
+// GRINDBOT AI FITNESS COACH
+// script.js PART 1
+// ==============================
+
+let weightHistory = [];
+let energyHistory = [];
+let sleepHistory = [];
+
+let weightChart;
+let energyChart;
+let sleepChart;
+
+
+// ==============================
+// BMI CALCULATION
+// ==============================
+
+function calculateBMI(weight, height){
+
+    let h = height / 100;
+
+    return (weight / (h*h)).toFixed(1);
+
+}
+
+
+// ==============================
+// GENERATE AI PLAN
+// ==============================
+
+async function generatePlan(){
+
     const name = document.getElementById("name").value;
-    const age = parseInt(document.getElementById("age").value);
+    const age = document.getElementById("age").value;
     const weight = parseFloat(document.getElementById("weight").value);
     const height = parseFloat(document.getElementById("height").value);
     const goal = document.getElementById("goal").value;
     const activity = document.getElementById("activity").value;
     const diet = document.getElementById("diet").value;
 
-    if (!name || !age || !weight || !height) {
+    if(!name || !age || !weight || !height){
+
         alert("Please fill all fields.");
+
         return;
+
     }
 
-    document.getElementById("result").innerText = "Generating AI Plan... Please wait...";
-    window.scrollTo({
+    const bmi = calculateBMI(weight,height);
 
-top:document.body.scrollHeight,
+    document.getElementById("bmi").innerHTML = bmi;
 
-behavior:"smooth"
+    document.getElementById("profileName").innerHTML = name;
+    document.getElementById("profileAge").innerHTML = age;
+    document.getElementById("profileWeight").innerHTML = weight;
+    document.getElementById("profileHeight").innerHTML = height;
+    document.getElementById("profileGoal").innerHTML = goal;
+    document.getElementById("profileBMI").innerHTML = bmi;
 
-});
+    document.getElementById("result").innerHTML="Generating AI Plan...";
 
-    const response = await fetch("/generate_plan", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-             name,
-             age,
-             weight,
-             height,
-             goal,
-             activity,
-             diet
-         })
-    });
+    try{
 
-    const data = await response.json();
+        const response = await fetch("/generate_plan",{
 
-    document.getElementById("bmi").innerText = data.bmi;
+            method:"POST",
 
-document.getElementById("profileName").innerText = name;
-document.getElementById("profileAge").innerText = age;
-document.getElementById("profileWeight").innerText = weight;
-document.getElementById("profileHeight").innerText = height;
-document.getElementById("profileGoal").innerText = goal;
-document.getElementById("profileBMI").innerText = data.bmi;
+            headers:{
+                "Content-Type":"application/json"
+            },
 
-document.getElementById("result").innerText = data.plan;
-}
-async function analyzeWeek() {
+            body:JSON.stringify({
+
+                name,
+                age,
+                weight,
+                height,
+                goal,
+                activity,
+                diet,
+                bmi
+
+            })
+
+        });
+
+        const data = await response.json();
+
+        document.getElementById("result").innerHTML = data.plan;
+
+    }
+
+    catch(err){
+
+        document.getElementById("result").innerHTML="Server Error.";
+
+        console.log(err);
+
+    }
+
+}// ==============================
+// WEEKLY ANALYSIS
+// ==============================
+
+async function analyzeWeek(){
 
     const currentWeight = parseFloat(document.getElementById("currentWeight").value);
-    const energy = document.getElementById("energy").value;
-    const sleep = document.getElementById("sleep").value;
+    const energy = parseInt(document.getElementById("energy").value);
+    const sleep = parseInt(document.getElementById("sleep").value);
     const notes = document.getElementById("notes").value;
 
-    if (!currentWeight) {
+    if(!currentWeight){
         alert("Please enter your current weight.");
         return;
     }
 
-    document.getElementById("weeklyResult").innerText =
-        "Analyzing your progress... Please wait...";
-        window.scrollTo({
+    document.getElementById("weeklyResult").innerHTML="Analyzing your week...";
 
-top:document.body.scrollHeight,
+    try{
 
-behavior:"smooth"
+        const response = await fetch("/analyze_week",{
 
-});
+            method:"POST",
 
-    const response = await fetch("/analyze_week", {
+            headers:{
+                "Content-Type":"application/json"
+            },
 
-        method: "POST",
+            body:JSON.stringify({
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+                currentWeight,
+                energy,
+                sleep,
+                notes
 
-        body: JSON.stringify({
-            currentWeight,
-            energy,
-            sleep,
-            notes
-        })
+            })
 
-    });
+        });
 
-    const data = await response.json();
+        const data = await response.json();
 
-    document.getElementById("weeklyResult").innerText = data.report;
-    weeklyHistory.push({
-    weight: currentWeight,
-    energy: parseInt(energy),
-    sleep: parseInt(sleep)
-});
+        document.getElementById("weeklyResult").innerHTML=data.report;
 
-localStorage.setItem(
-    "weeklyHistory",
-    JSON.stringify(weeklyHistory)
-);
+        weightHistory.push(currentWeight);
+        energyHistory.push(energy);
+        sleepHistory.push(sleep);
 
-drawCharts();    drawCharts(currentWeight, energy, sleep);
+        updateCharts();
+
+        updateComparison(currentWeight,energy,sleep);
+
+    }
+
+    catch(err){
+
+        document.getElementById("weeklyResult").innerHTML="Error generating report.";
+
+        console.log(err);
+
+    }
 
 }
-// ---------------- Charts ----------------
 
-let weightChart;
-let energyChart;
-let sleepChart;
 
-function drawCharts(){
 
-    const labels = weeklyHistory.map((_, index) => "Week " + (index + 1));
+// ==============================
+// COMPARISON
+// ==============================
 
-    const weights = weeklyHistory.map(item => item.weight);
-    const energies = weeklyHistory.map(item => item.energy);
-    const sleeps = weeklyHistory.map(item => item.sleep);
+function updateComparison(weight,energy,sleep){
+
+    document.getElementById("comparison").innerHTML=`
+
+<b>Your Weight:</b> ${weight} kg<br>
+
+<b>Average User:</b> 70 kg<br><br>
+
+<b>Your Energy:</b> ${energy}/5<br>
+
+<b>Average User:</b> 3.5/5<br><br>
+
+<b>Your Sleep:</b> ${sleep}/5<br>
+
+<b>Average User:</b> 3.5/5
+
+`;
+
+}// ==============================
+// CHARTS
+// ==============================
+
+function updateCharts(){
+
+    const labels = [];
+
+    for(let i=1;i<=weightHistory.length;i++){
+        labels.push("Week "+i);
+    }
+
+    // Weight Chart
 
     if(weightChart){
         weightChart.destroy();
-        energyChart.destroy();
-        sleepChart.destroy();
     }
 
     weightChart = new Chart(
         document.getElementById("weightChart"),
         {
-            type:'line',
+            type:"line",
             data:{
                 labels:labels,
                 datasets:[{
-                    label:"Weight",
-                    data:weights
+                    label:"Weight (kg)",
+                    data:weightHistory,
+                    borderColor:"#22c55e",
+                    backgroundColor:"rgba(34,197,94,0.2)",
+                    fill:true,
+                    tension:0.4
                 }]
+            },
+            options:{
+                responsive:true
             }
         }
     );
+
+
+
+    // Energy Chart
+
+    if(energyChart){
+        energyChart.destroy();
+    }
 
     energyChart = new Chart(
         document.getElementById("energyChart"),
         {
-            type:'line',
+            type:"bar",
             data:{
                 labels:labels,
                 datasets:[{
                     label:"Energy",
-                    data:energies
+                    data:energyHistory,
+                    backgroundColor:"#3b82f6"
                 }]
+            },
+            options:{
+                responsive:true,
+                scales:{
+                    y:{
+                        beginAtZero:true,
+                        max:5
+                    }
+                }
             }
         }
     );
 
+
+
+    // Sleep Chart
+
+    if(sleepChart){
+        sleepChart.destroy();
+    }
+
     sleepChart = new Chart(
         document.getElementById("sleepChart"),
         {
-            type:'line',
+            type:"bar",
             data:{
                 labels:labels,
                 datasets:[{
                     label:"Sleep",
-                    data:sleeps
+                    data:sleepHistory,
+                    backgroundColor:"#f59e0b"
                 }]
+            },
+            options:{
+                responsive:true,
+                scales:{
+                    y:{
+                        beginAtZero:true,
+                        max:5
+                    }
+                }
             }
         }
     );
 
 }
-window.onload = function(){
 
-    if(weeklyHistory.length > 0){
 
-        drawCharts();
-        document.getElementById("comparison").innerHTML = `
-<h3>Your Stats</h3>
+// ==============================
+// PAGE LOAD
+// ==============================
 
-<p><b>Weight:</b> ${currentWeight} kg</p>
+window.onload=function(){
 
-<p><b>Energy:</b> ${energy}/5</p>
+    document.getElementById("bmi").innerHTML="--";
 
-<p><b>Sleep:</b> ${sleep}/5</p>
+    document.getElementById("result").innerHTML=
+    "Generate your AI Fitness Plan.";
 
-<hr>
+    document.getElementById("weeklyResult").innerHTML=
+    "Analyze your week to receive an AI report.";
 
-<h3>Average User</h3>
+}
+// ==============================
+// AI CHATBOT
+// ==============================
 
-<p><b>Weight:</b> 72 kg</p>
+async function askAI(){
 
-<p><b>Energy:</b> 3/5</p>
+    const question =
+    document.getElementById("chatQuestion").value;
 
-<p><b>Sleep:</b> 3/5</p>
-`;
+    if(question==""){
+        alert("Please enter a question.");
+        return;
+    }
+
+    document.getElementById("chatAnswer").innerHTML =
+    "🤖 Thinking...";
+
+    try{
+
+        const response = await fetch("/chat_ai",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+                question:question
+            })
+
+        });
+
+        const data = await response.json();
+
+        document.getElementById("chatAnswer").innerHTML =
+        data.answer;
+
+    }
+
+    catch(err){
+
+        document.getElementById("chatAnswer").innerHTML =
+        "Server Error.";
 
     }
 

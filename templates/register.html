@@ -1,19 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GRINDBOT Register</title>
+
+<title>GRINDBOT | Register</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
 </head>
 
 <body>
 
-<div class="container">
+<div class="auth-container">
+
+<div class="auth-card">
 
 <h1>🏋️ GRINDBOT</h1>
-<h3>Create Account</h3>
+
+<h2>Create Account</h2>
+
+<p>Join your AI Fitness Coach today</p>
 
 <form method="POST">
 
@@ -26,7 +42,7 @@ required>
 <input
 type="email"
 name="email"
-placeholder="Email"
+placeholder="Email Address"
 required>
 
 <input
@@ -36,17 +52,29 @@ placeholder="Password"
 required>
 
 <button type="submit">
-Create Account
+
+✨ Create Account
+
 </button>
 
 </form>
 
-<p>
+<div class="bottom-link">
+
 Already have an account?
-<a href="/login">Login</a>
-</p>
+
+<a href="/login">
+
+Login
+
+</a>
+
+</div>
+
+</div>
 
 </div>
 
 </body>
+
 </html>

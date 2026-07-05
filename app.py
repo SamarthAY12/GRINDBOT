@@ -29,6 +29,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 class User(UserMixin, db.Model):
+
     id = db.Column(db.Integer, primary_key=True)
 
     username = db.Column(db.String(100), unique=True, nullable=False)
@@ -36,15 +37,45 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
 
     password = db.Column(db.String(100), nullable=False)
+
+    age = db.Column(db.Integer)
+
+    weight = db.Column(db.Float)
+
+    height = db.Column(db.Float)
+
+    goal = db.Column(db.String(100))
+
+    activity = db.Column(db.String(100))
+
+    diet = db.Column(db.String(100))
+class Progress(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+    current_weight = db.Column(db.Float)
+
+    energy = db.Column(db.Integer)
+
+    sleep = db.Column(db.Integer)
+
+    notes = db.Column(db.Text)
+
+    created_at = db.Column(db.DateTime, default=db.func.now())
 @login_manager.user_loader
 def load_user(user_id): 
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 
 @app.route("/")
 @login_required
 def home():
-    return render_template("index.html")
+    return render_template(
+        "index.html",
+        user=current_user
+    )
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
@@ -65,6 +96,8 @@ def register():
 
         db.session.add(user)
         db.session.commit()
+
+        
 
         return redirect(url_for("login"))
 
@@ -107,7 +140,9 @@ def test():
 
 
 @app.route("/generate_plan", methods=["POST"])
+@login_required
 def generate_plan():
+    
     try:
         data = request.get_json()
 
@@ -121,6 +156,16 @@ def generate_plan():
 
         bmi = round(weight / ((height / 100) ** 2), 2)
 
+        if current_user.is_authenticated:
+           current_user.age = age
+           current_user.weight = weight
+           current_user.height = height
+           current_user.goal = goal
+           current_user.activity = activity
+           current_user.diet = diet
+
+        db.session.commit()
+
         prompt = f"""
 You are an expert fitness coach.
 
@@ -130,7 +175,6 @@ Age: {age}
 Weight: {weight} kg
 Height: {height} cm
 BMI: {bmi}
-Goal: {goal}
 Goal: {goal}
 Activity Level: {activity}
 Diet Preference: {diet}
@@ -157,12 +201,31 @@ Keep the response simple and easy to understand.
     except Exception as e:
         traceback.print_exc()
 
-        return jsonify({
-            "bmi": "",
-            "plan": f"Error: {str(e)}"
-        }), 500
+        error = str(e)
+
+    if "RESOURCE_EXHAUSTED" in error or "429" in error:
+        message = (
+            "⚠️ AI Plan Generator is temporarily unavailable because the daily request limit has been reached."
+        )
+
+    elif "503" in error:
+        message = (
+            "⚠️ AI Plan Generator is currently busy. Please try again shortly."
+        )
+
+    else:
+        message = (
+            "⚠️ Unable to generate your fitness plan at the moment. Please try again later."
+        )
+
+    return jsonify({
+        "success": False,
+        "bmi": "",
+        "plan": message
+    }), 500
 
 @app.route("/analyze_week", methods=["POST"])
+@login_required
 def analyze_week():
 
     try:
@@ -172,6 +235,18 @@ def analyze_week():
         energy = data["energy"]
         sleep = data["sleep"]
         notes = data["notes"]
+
+        # Save progress in database
+        progress = Progress(
+            user_id=current_user.id,
+            current_weight=current_weight,
+            energy=energy,
+            sleep=sleep,
+            notes=notes
+        )
+
+        db.session.add(progress)
+        db.session.commit()
 
         prompt = f"""
 You are an expert fitness coach.
@@ -186,10 +261,6 @@ Weekly Notes:
 {notes}
 
 Generate:
-
-Generate a professional fitness report.
-
-Include:
 
 1. Personalized Workout
 
@@ -226,9 +297,73 @@ Keep the response motivational and beginner friendly.
     except Exception as e:
         traceback.print_exc()
 
+        message = str(e)
+
+    if "RESOURCE_EXHAUSTED" in message or "429" in message:
+        answer = "⚠️ GRINDBOT AI has reached the daily free API limit. Please try again later."
+    elif "503" in message:
+        answer = "⚠️ GRINDBOT AI is temporarily busy. Please try again in a few moments."
+    else:
+        answer = "⚠️ An unexpected error occurred. Please try again."
+
+    return jsonify({
+        "answer": answer
+    }), 500
+@app.route("/history")
+@login_required
+def history():
+
+    history = Progress.query.filter_by(
+        user_id=current_user.id
+    ).order_by(
+        Progress.created_at.desc()
+    ).all()
+
+    return render_template(
+        "history.html",
+        history=history
+    )
+@app.route("/chat_ai", methods=["POST"])
+@login_required
+def chat_ai():
+
+    try:
+        data = request.get_json()
+
+        question = data["question"]
+
+        prompt = f"""
+You are GRINDBOT, an expert AI Fitness & Nutrition Coach.
+
+The user asked:
+
+{question}
+
+Rules:
+- Give beginner-friendly advice.
+- Keep the answer clear and practical.
+- If nutrition is asked, suggest healthy foods.
+- If workouts are asked, suggest safe exercises.
+- Motivate the user at the end.
+- Keep the answer under 300 words.
+"""
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash-lite",
+            contents=prompt
+        )
+
         return jsonify({
-            "report": str(e)
-        }), 500
+            "answer": response.text
+        })
+
+    except Exception as e:
+        traceback.print_exc()
+
+
+        return jsonify({
+        "answer": "⚠️ GRINDBOT AI is currently busy. Please try again in a few moments."
+    }), 500
 with app.app_context():
     db.create_all()
 

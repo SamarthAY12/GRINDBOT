@@ -1,188 +1,342 @@
+/* ===========================
+   GRINDBOT AI FITNESS COACH
+=========================== */
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family:'Poppins',sans-serif;
 }
 
 body{
     background:#0f172a;
-    color:white;
+    color:#fff;
+    min-height:100vh;
 }
 
 .container{
     width:90%;
-    max-width:1100px;
-    margin:30px auto;
+    max-width:1200px;
+    margin:40px auto;
 }
 
 .header{
     text-align:center;
-    margin-bottom:30px;
+    margin-bottom:40px;
 }
 
 .header h1{
-    font-size:45px;
-    color:#38bdf8;
+    font-size:55px;
+    color:#4ade80;
+    font-weight:700;
 }
 
 .header p{
-    color:#cbd5e1;
+    color:#d1d5db;
+    font-size:22px;
     margin-top:10px;
 }
 
-.card{
+/* ======================
+PROFILE CARD
+====================== */
 
-    background:#1e293b;
-
-    padding:25px;
-
-    border-radius:20px;
-
-    margin-bottom:25px;
-
-    box-shadow:0px 0px 15px rgba(0,0,0,.3);
-
-}
-
-.grid{
-
-    display:grid;
-
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-
-    gap:20px;
-
-}
-
-input,select,textarea{
-
-    width:100%;
-
-    padding:12px;
-
-    border:none;
-
-    border-radius:10px;
-
-    margin-top:10px;
-
-    margin-bottom:20px;
-
-    background:#334155;
-
-    color:white;
-
-    font-size:16px;
-
-}
-
-textarea{
-
-height:120px;
-
-}
-
-button{
-
-width:100%;
-
-padding:15px;
-
-font-size:18px;
-
-background:#0ea5e9;
-
-color:white;
-
-border:none;
-
-border-radius:12px;
-
-cursor:pointer;
-
-transition:.3s;
-
-}
-
-button:hover{
-
-background:#0284c7;
-
-}
-
-pre{
-
-white-space:pre-wrap;
-
-line-height:1.7;
-
-font-size:15px;
-
-}
-
-canvas{
-
-background:white;
-
-border-radius:15px;
-
-padding:15px;
-
-margin-top:15px;
-
-}
-
-hr{
-
-margin:25px 0;
-
-border:1px solid #334155;
-
-}
-
-#comparison{
-
-background:#334155;
-
-padding:20px;
-
-border-radius:15px;
-
-line-height:2;
-
-}
-@media(max-width:768px){
-
-.header h1{
-
-font-size:30px;
-
-}
-
-.container{
-
-width:95%;
-
-}
-
-}
 .profile-card{
-    margin-top:25px;
-    background:#1f2b43;
-    padding:25px;
-    border-radius:15px;
+    background:#1e293b;
+    padding:30px;
+    border-radius:20px;
+    margin-bottom:35px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+.profile-card h2{
+    color:#4ade80;
+    margin-bottom:25px;
+    font-size:35px;
 }
 
 .profile-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:15px;
-    margin-top:15px;
+    grid-template-columns:repeat(3,1fr);
+    gap:25px;
 }
 
 .profile-grid div{
-    background:#2c3b58;
+    background:#273449;
+    padding:18px;
+    border-radius:12px;
+    font-size:18px;
+}
+
+.profile-grid strong{
+    color:white;
+}
+
+/* ======================
+CARD
+====================== */
+
+.card{
+    background:#1e293b;
+    border-radius:20px;
+    padding:30px;
+    margin-top:35px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+.card h2{
+    color:#4ade80;
+    margin-bottom:25px;
+    font-size:32px;
+}
+
+/* ======================
+INPUTS
+====================== */
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:16px;
+    margin-top:15px;
+    margin-bottom:20px;
+    border:none;
+    outline:none;
+    border-radius:12px;
+    background:#273449;
+    color:white;
+    font-size:17px;
+}
+
+textarea{
+    resize:vertical;
+}
+
+label{
+    font-size:18px;
+    font-weight:600;
+    color:#ddd;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border:2px solid #4ade80;
+}/* ======================
+BUTTONS
+====================== */
+
+button{
+    width:100%;
+    padding:18px;
+    margin-top:20px;
+    border:none;
+    border-radius:12px;
+    background:#22c55e;
+    color:white;
+    font-size:20px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    background:#16a34a;
+    transform:translateY(-2px);
+}
+
+/* ======================
+BMI
+====================== */
+
+#bmi{
+    text-align:center;
+    font-size:42px;
+    color:#4ade80;
+    margin:20px 0;
+}
+
+/* ======================
+AI RESULT
+====================== */
+
+pre{
+    background:#111827;
+    color:#e5e7eb;
+    padding:20px;
+    border-radius:15px;
+    white-space:pre-wrap;
+    line-height:1.7;
+    font-size:16px;
+    overflow-x:auto;
+    min-height:220px;
+}
+
+/* ======================
+CANVAS
+====================== */
+
+canvas{
+    width:100% !important;
+    max-height:350px;
+    background:white;
+    border-radius:15px;
     padding:15px;
-    border-radius:10px;
+    margin-top:20px;
+}
+
+/* ======================
+COMPARISON BOX
+====================== */
+
+#comparison{
+    background:#273449;
+    border-left:6px solid #4ade80;
+    border-radius:12px;
+    padding:20px;
+    font-size:18px;
+    line-height:1.7;
+    margin-top:20px;
+}
+
+/* ======================
+FOOTER
+====================== */
+
+.footer{
+    text-align:center;
+    margin-top:50px;
+    color:#d1d5db;
+    padding:30px;
+}
+
+.footer h2{
+    color:#4ade80;
+    margin-bottom:10px;
+}
+
+hr{
+    border:none;
+    height:1px;
+    background:#334155;
+    margin:40px 0;
+}/* ==========================
+   DASHBOARD
+========================== */
+
+.charts{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:25px;
+    margin-top:25px;
+}
+
+.chart-box{
+    background:#1d263b;
+    border-radius:15px;
+    padding:20px;
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.chart-box h3{
+    color:#4ade80;
+    margin-bottom:15px;
+    text-align:center;
+}
+
+canvas{
+    width:100% !important;
+    max-height:260px;
+}
+
+/* ==========================
+   COMPARISON
+========================== */
+
+#comparison{
+    margin-top:20px;
+    padding:20px;
+    border-radius:15px;
+    background:#1d263b;
+    border:1px solid rgba(255,255,255,.08);
+    line-height:1.8;
+}
+
+/* ==========================
+   FOOTER
+========================== */
+
+.footer{
+    margin-top:50px;
+    text-align:center;
+    padding:30px;
+    color:#bfc8d8;
+}
+
+.footer h2{
+    color:#4ade80;
+    margin-bottom:10px;
+}
+
+/* ==========================
+   BUTTON HOVER
+========================== */
+
+button{
+    transition:.3s;
+}
+
+button:hover{
+    transform:translateY(-3px);
+    box-shadow:0 12px 30px rgba(0,0,0,.25);
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media(max-width:900px){
+
+.profile-grid{
+grid-template-columns:1fr;
+}
+
+.inputs{
+grid-template-columns:1fr;
+}
+
+.charts{
+grid-template-columns:1fr;
+}
+
+.container{
+width:95%;
+}
+
+h1{
+font-size:42px;
+}
+
+}
+
+@media(max-width:600px){
+
+.card{
+padding:20px;
+}
+
+button{
+width:100%;
+}
+
+h1{
+font-size:34px;
+}
+
+.subtitle{
+font-size:18px;
+}
+
 }
